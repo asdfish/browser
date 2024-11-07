@@ -2,10 +2,10 @@ CXX := c++
 CXX_FLAGS := -std=c++11 $\
 						 -O2 -march=native -pipe $\
 						 -Wall -Wextra -Wpedantic $\
-						 $(shell pkg-config --cflags gtk4) $\
+						 $(shell pkg-config --cflags gtk+-3.0) $\
 						 $(shell pkg-config --cflags webkit2gtk-4.0)
 LD_FLAGS := ${CXX_FLAGS} $\
-						$(shell pkg-config --libs gtk4) $\
+						$(shell pkg-config --libs gtk+-3.0) $\
 						$(shell pkg-config --libs webkit2gtk-4.0)
 
 OBJECT_FILES := $(patsubst src/%.cpp, $\
@@ -14,7 +14,8 @@ OBJECT_FILES := $(patsubst src/%.cpp, $\
 
 define REMOVE
 	$(if $(wildcard $(1)),$\
-		$(shell rm $(1)))
+		$(info Removing $(1)) $\
+		$(shell rm -rf $(1)))
 endef
 define REMOVE_LIST
 	$(foreach ITEM,$\
@@ -25,10 +26,12 @@ endef
 all: browser
 
 browser: ${OBJECT_FILES}
-	${CXX} $< ${LD_FLAGS} -o $@
+	$(info Linking $<)
+	@${CXX} $< ${LD_FLAGS} -o $@
 	
 build/%.o: src/%.cpp
-	${CXX} -c $< ${CXX_FLAGS} -o $@
+	$(info Compiling $<)
+	@${CXX} -c $< ${CXX_FLAGS} -o $@
 
 clean:
 	$(call REMOVE_LIST,${OBJECT_FILES})
